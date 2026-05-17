@@ -1,0 +1,38 @@
+version: 0.2
+
+# AWS CodeBuild spec for the worker Lambda container image.
+# Triggered by git push to main; builds the Docker image and pushes
+# it to ECR; Lambda is updated separately via deploy.sh.
+
+env:
+  variables:
+    AWS_REGION: us-east-1
+    ECR_REPO: yonah-worker
+  parameter-store:
+    # Optional: pull jhcontext PyPI token if the SDK is private at install time
+    # JHCONTEXT_PYPI_TOKEN: /yonah/jhcontext-pypi-token
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging in to ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      - IMAGE_TAG="$(git rev-parse --short HEAD)"
+      - REPO_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO"
+      - echo "Will tag $REPO_URI:$IMAGE_TAG"
+
+  build:
+    commands:
+      - docker build -t $ECR_REPO:$IMAGE_TAG .
+      - docker tag $ECR_REPO:$IMAGE_TAG $REPO_URI:$IMAGE_TAG
+      - docker tag $ECR_REPO:$IMAGE_TAG $REPO_URI:latest
+
+  post_build:
+    commands:
+      - docker push $REPO_URI:$IMAGE_TAG
+      - docker push $REPO_URI:latest
+      - printf '[{"name":"worker","imageUri":"%s"}]' "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
