@@ -5,7 +5,7 @@ This module registers the role-gated blueprints + the WebSocket handler.
 The conversational agent (Yonah) lives in agent/yonah/yonah_agent.py and is
 invoked through the Blueprint route handlers.
 
-Architecture reference: see README.md and the framework paper at ACM TAAS.
+Architecture reference: see README.md.
 """
 from chalice import Chalice, CORSConfig
 

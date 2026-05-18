@@ -105,7 +105,7 @@ The framework upstream is the source from which the per-vertical reference imple
 
 | Vertical | Backend repo | Status |
 |---|---|---|
-| Education | [yonah-edu-agent](https://github.com/yonah-ai/yonah-edu-agent) | reference implementation (companion to the IJAIED paper) |
+| Education | [yonah-agent-edu](https://github.com/yonah-ai/yonah-agent-edu) | active reference implementation |
 | Health | `yonah-agent-health` | forthcoming — will fork this framework |
 | Hire | `yonah-agent-hire` | forthcoming — will fork this framework |
 
